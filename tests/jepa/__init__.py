@@ -1,1 +1,0 @@
-# JEPA tests package

@@ -17,6 +17,7 @@ ARCHITECTURE_PRESETS: Type[str] = Literal[
     "PrimusB",
     "PrimusM",
     "PrimusL",
+    "BrainJEPA",
     "ResidualEncoderUNet",
     "PlainConvUNet",
 ]

@@ -5,7 +5,7 @@ from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
 from nnssl.architectures.noskipResEncUNet import ResidualEncoderUNet_noskip
 
 
-SUPPORTED_ARCHITECTURES = Literal["ResEncL", "NoSkipResEncL" "PrimusS", "PrimusB", "PrimusM", "PrimusL"]
+SUPPORTED_ARCHITECTURES = Literal["ResEncL", "NoSkipResEncL" "PrimusS", "PrimusB", "PrimusM", "PrimusL", "BrainJEPA"]
 PRIMUS_SCALES = Literal["S", "M", "B", "L"]
 
 
