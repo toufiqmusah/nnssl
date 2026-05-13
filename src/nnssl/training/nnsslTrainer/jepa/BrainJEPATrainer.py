@@ -63,6 +63,7 @@ class BaseBrainJEPATrainer(BaseEvaMAETrainer):
         self.encoder_eva_numheads = 12
 
         # JEPA-specific hyperparameters
+        self.arch_name = "PrimusM"    # overridden by subclasses for smaller variants
         self.stage_indices = None     # None = auto thirds of eva_depth
         self.pred_dim = 384
         self.pred_depth = 4
@@ -108,7 +109,7 @@ class BaseBrainJEPATrainer(BaseEvaMAETrainer):
         )
 
         adapt_plan = AdaptationPlan(
-            architecture_plans=ArchitecturePlans("PrimusM"),
+            architecture_plans=ArchitecturePlans(self.arch_name),
             pretrain_plan=self.plan,
             pretrain_num_input_channels=1,
             recommended_downstream_patchsize=self.recommended_downstream_patchsize,
@@ -429,6 +430,7 @@ class BaseBrainJEPATrainer_PrimusS_96ps(BaseBrainJEPATrainer):
         device: torch.device = torch.device("cuda"),
     ):
         super().__init__(plan, configuration_name, fold, pretrain_json, device)
+        self.arch_name = "PrimusS"
         self.embed_dim = 396
         self.encoder_eva_depth = 12
         self.encoder_eva_numheads = 6
@@ -449,6 +451,7 @@ class BaseBrainJEPATrainer_test(BaseBrainJEPATrainer):
         device: torch.device = torch.device("cuda"),
     ):
         super().__init__(plan, configuration_name, fold, pretrain_json, device)
+        self.arch_name = "PrimusS"
         self.config_plan.patch_size = (96, 96, 96)
         self.embed_dim = 396
         self.encoder_eva_depth = 12

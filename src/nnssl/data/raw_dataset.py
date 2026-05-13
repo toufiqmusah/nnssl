@@ -381,6 +381,28 @@ class Collection:
         for dataset in self.datasets.values():
             dataset.update_extension(new_extension)
 
+    def _get_dataset_by_index(self, dataset_index) -> "Dataset":
+        """Look up a Dataset by its dataset_index attribute.
+
+        The dict keys in self.datasets (coming from the JSON) may not equal
+        str(dataset_index), so we match on the attribute instead.
+        """
+        # Fast path: try the key directly (covers the common case)
+        for candidate_key in (dataset_index, str(dataset_index)):
+            if candidate_key in self.datasets:
+                ds = self.datasets[candidate_key]
+                if str(ds.dataset_index) == str(dataset_index):
+                    return ds
+        # Slow path: linear scan
+        for ds in self.datasets.values():
+            if str(ds.dataset_index) == str(dataset_index):
+                return ds
+        raise KeyError(
+            f"No dataset with dataset_index={dataset_index!r} found. "
+            f"Available keys: {list(self.datasets.keys())}, "
+            f"available dataset_index values: {[d.dataset_index for d in self.datasets.values()]}"
+        )
+
     def raw_to_pp_path(self, data_identifier: str, ext: str | None = None) -> None:
         independent_imgs = self.to_independent_images()
         pp_path = [img.get_absolute_pp_path(self.collection_name, data_identifier, ext) for img in independent_imgs]
@@ -388,7 +410,7 @@ class Collection:
             subj_id = img.subject_id
             sess_id = img.session_id
             dataset_index = img.dataset_index
-            session_imgs = self.datasets[str(dataset_index)].subjects[subj_id].sessions[sess_id]
+            session_imgs = self._get_dataset_by_index(dataset_index).subjects[subj_id].sessions[sess_id]
             session_imgs: Session
             imgs = [i for i in session_imgs.images if i.name == img.image_name]
             assert len(imgs) == 1, f"Found more than one image with the name {imgs[0].image_name}"

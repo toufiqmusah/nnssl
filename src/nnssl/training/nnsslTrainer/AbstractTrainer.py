@@ -998,6 +998,8 @@ class AbstractBaseTrainer(ABC):
             assert len(subject_identifiers) != 0, "No subjects found. Aborting"
             subject_identifiers = sorted(subject_identifiers)
             n_val_subjects = min(1000, max(int(len(subject_identifiers) / 100), 5))
+            # Ensure we never put all subjects into validation (cap at 80% of total)
+            n_val_subjects = min(n_val_subjects, max(1, int(len(subject_identifiers) * 0.8)))
             rng = random.Random(12345)  # seed to guarantee same split always
             val_subjects = rng.sample(subject_identifiers, n_val_subjects)
             train_subjects = list(set(subject_identifiers) - set(val_subjects))
