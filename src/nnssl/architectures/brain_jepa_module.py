@@ -501,14 +501,17 @@ class BrainJEPA(nn.Module):
             stage_loss = stage_loss / (B * T)
 
             # Cosine similarity metric (detached, for monitoring)
+            # `pred` is from the last target-block iteration (t = T-1),
+            # so we must use the matching mask.
             with torch.no_grad():
                 cos_sims = []
+                last_tgt_mask = target_masks[:, T - 1]  # [B, N]
                 for b in range(B):
-                    tgt_mask_0 = target_masks[b, 0]
-                    tgt_idx = tgt_mask_0.nonzero(as_tuple=True)[0]
-                    if len(tgt_idx) > 0:
-                        p = pred[b, : len(tgt_idx)]
-                        t_f = tgt_feat[b, tgt_idx]
+                    tgt_idx = last_tgt_mask[b].nonzero(as_tuple=True)[0]
+                    k = min(tgt_counts[b], len(tgt_idx))
+                    if k > 0:
+                        p = pred[b, :k]
+                        t_f = tgt_feat[b, tgt_idx[:k]]
                         cos = F.cosine_similarity(p, t_f, dim=-1).mean()
                         cos_sims.append(cos.item())
                 if cos_sims:
